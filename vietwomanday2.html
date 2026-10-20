@@ -54,7 +54,7 @@
             font-family: 'Playfair Display', serif;
         }
         .glass-panel {
-            background: rgba(15, 23, 42, 0.75);
+            background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.12);
         }
@@ -62,9 +62,6 @@
             background: rgba(255, 255, 255, 0.07);
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.15);
-        }
-        .glow-heart {
-            filter: drop-shadow(0 0 10px rgba(244, 63, 94, 0.8));
         }
         /* Custom Scrollbar */
         ::-webkit-scrollbar {
@@ -77,7 +74,6 @@
             background: #e11d48;
             border-radius: 4px;
         }
-        /* Canvas Responsive Fit */
         canvas {
             touch-action: none;
             user-select: none;
@@ -94,7 +90,7 @@
         <div class="max-w-6xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-rose-500 to-amber-400 flex items-center justify-center shadow-lg shadow-rose-500/30">
-                    <i class="fa-solid font-bold text-white text-lg">❤️</i>
+                    <span class="text-white text-lg font-bold">❤️</span>
                 </div>
                 <div>
                     <h1 class="text-lg font-bold bg-gradient-to-r from-rose-400 via-pink-300 to-amber-200 bg-clip-text text-transparent">
@@ -169,10 +165,10 @@
                 <!-- Interactive Canvas / Game Arena -->
                 <div class="lg:col-span-7 flex flex-col items-center justify-center w-full">
                     <div class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden border border-slate-700 bg-slate-900/90 shadow-2xl flex items-center justify-center">
-                        <canvas id="game-canvas" class="w-full h-full block"></canvas>
+                        <canvas id="game-canvas" class="w-full h-full block cursor-pointer"></canvas>
                         
                         <!-- Overlay Start/Success Screen -->
-                        <div id="canvas-overlay" class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center transition-all duration-300">
+                        <div id="canvas-overlay" class="absolute inset-0 bg-slate-950/85 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center transition-all duration-300">
                             <div id="overlay-icon" class="text-5xl mb-3 text-rose-400">✈️</div>
                             <h3 id="overlay-title" class="text-xl md:text-2xl font-bold text-white mb-2">Ready for Flight?</h3>
                             <p id="overlay-desc" class="text-slate-300 text-sm max-w-md mb-6">Catch the essential travel items into your suitcase before time runs out!</p>
@@ -182,10 +178,16 @@
                         </div>
                     </div>
 
-                    <!-- Live Mini Game Score / Status Bar -->
+                    <!-- Live Mini Game Score & Action Bar -->
                     <div class="w-full flex justify-between items-center mt-3 px-2 text-xs text-slate-400">
                         <div id="game-score" class="font-mono text-amber-300 font-semibold text-sm">Score: 0 / 10</div>
-                        <div id="game-status-msg" class="text-rose-300 italic">Complete the challenge to unlock the next destination!</div>
+                        <div class="flex items-center gap-3">
+                            <!-- Skip Button Added for Every Chapter -->
+                            <button id="skip-btn" onclick="skipMiniGame()" class="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-semibold transition-all flex items-center gap-1.5 shadow">
+                                <i class="fa-solid fa-forward"></i> Skip Challenge
+                            </button>
+                            <div id="game-status-msg" class="text-rose-300 italic hidden sm:block">Complete or skip to unlock next stop!</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -222,8 +224,8 @@
             </div>
 
             <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                <button onclick="triggerConfettiBurst()" class="px-6 py-3 rounded-xl bg-gradient-to-r from-rose-500 to-amber-500 text-white font-bold shadow-lg shadow-rose-500/40 hover:scale-105 active:scale-95 transition-all">
-                    💖 Replay Fireworks & Love!
+                <button onclick="playWinSound()" class="px-6 py-3 rounded-xl bg-gradient-to-r from-rose-500 to-amber-500 text-white font-bold shadow-lg shadow-rose-500/40 hover:scale-105 active:scale-95 transition-all">
+                    💖 Celebrate Love & Joy!
                 </button>
                 <button onclick="closeFinaleModal()" class="px-5 py-3 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-medium transition-all">
                     Explore Road Trip Again
@@ -253,7 +255,7 @@
             const icon = document.getElementById('sound-icon');
             if (soundEnabled) {
                 icon.className = 'fa-solid fa-volume-high text-rose-400';
-                playChimeSound(523.25, 0.2); // C5 notification
+                playChimeSound(523.25, 0.2);
             } else {
                 icon.className = 'fa-solid fa-volume-xmark';
             }
@@ -298,7 +300,6 @@
             }
         }
 
-        // Add float animation keyframes dynamically
         const styleSheet = document.createElement("style");
         styleSheet.innerText = `
             @keyframes floatHeart {
@@ -340,7 +341,7 @@
                 location: "La Jolla, San Diego",
                 narrative: "We arrived in beautiful La Jolla just in time for high tide at The Marine Room. Giant Pacific ocean waves crash against the panoramic window right beside our candlelit table while we savor exquisite food.",
                 loveNote: "The crashing ocean waves are breathtaking, but not as stunning as you tonight.",
-                instruction: "Time your dinner clicks to match high tide waves crashing against the glass!",
+                instruction: "Click or tap on the glass window right when huge high tide waves hit peak height!",
                 gameType: "marineRoom",
                 targetScore: 6
             },
@@ -351,7 +352,7 @@
                 location: "Joshua Tree National Park",
                 narrative: "Leaving the coast, our camper climbs into the high desert of Joshua Tree. After exploring the mysterious giant boulders around Skull Rock, we lie on top of our camper under a blanket of endless brilliant stars.",
                 loveNote: "Ran, in a sky full of billions of stars, you will always be my brightest one.",
-                instruction: "Connect the glowing stars in the desert night sky to form our Love Constellation!",
+                instruction: "Click on glowing stars in the desert night sky to form our Love Constellation!",
                 gameType: "stargazing",
                 targetScore: 5
             },
@@ -362,7 +363,7 @@
                 location: "Seligman / Route 66",
                 narrative: "We hit iconic Route 66! It feels just like stepping into the 'Cars' movie in Radiator Springs. Vintage neon signs, retro gas pumps, cute diners, and endless open desert road ahead of us.",
                 loveNote: "Life is a highway, Ran, and I'm so glad I'm sharing every mile with you!",
-                instruction: "Drive our camper and collect neon Route 66 signs while avoiding oil slicks!",
+                instruction: "Click on Route 66 neon signs as they appear along the highway!",
                 gameType: "route66",
                 targetScore: 8
             },
@@ -373,7 +374,7 @@
                 location: "Grand Canyon National Park",
                 narrative: "Words can barely describe standing together at the rim of the Grand Canyon. Deep red rock layers stretch forever into the horizon while majestic eagles soar softly on the canyon drafts.",
                 loveNote: "The Grand Canyon took millions of years to form, just like my love for you grows endless every day.",
-                instruction: "Guide the soaring eagle through canyon arches to gather loving golden feathers!",
+                instruction: "Click or touch to move our flying eagle and collect golden feathers in the canyon!",
                 gameType: "eagleFlight",
                 targetScore: 7
             },
@@ -384,7 +385,7 @@
                 location: "Page, Arizona",
                 narrative: "Just before sunset, we walked to the edge of Horseshoe Bend. The Colorado River curves dramatically 1,000 feet below, reflecting golden oranges, purples, and deep pinks across the desert canyon.",
                 loveNote: "Ran, click the shutter button! We need to capture this golden sunset memory together.",
-                instruction: "Snap the perfect camera photo right when the sunset aligns with Horseshoe Bend!",
+                instruction: "Click the canvas to take photos right when the golden sun aligns with the canyon!",
                 gameType: "horseshoeSnap",
                 targetScore: 5
             },
@@ -395,9 +396,9 @@
                 location: "Las Vegas, Nevada",
                 narrative: "From silent desert beauty to bright shimmering neon lights! We rolled our camper into Las Vegas, strolled the Vegas Strip, watched the dancing Bellagio fountains, and felt like the luckiest couple in the world.",
                 loveNote: "I didn't need to play any casino games in Vegas, Ran—I already won the ultimate jackpot when I met you!",
-                instruction: "Match all romantic slot cards in the Vegas memory game to win our jackpot!",
+                instruction: "Click the slot wheel when matching heart symbols align to hit the Jackpot!",
                 gameType: "vegasMemory",
-                targetScore: 6
+                targetScore: 5
             },
             {
                 id: 9,
@@ -445,14 +446,21 @@
             // Buttons State
             document.getElementById('prev-btn').disabled = (currentChapterIdx === 0);
             
-            // Next button enabled only if game is completed or chapter already beat
             const canProceed = chapterCompleted[currentChapterIdx] || ch.gameType === 'finale';
             document.getElementById('next-btn').disabled = !canProceed;
+
+            // Skip button display
+            const skipBtn = document.getElementById('skip-btn');
+            if (ch.gameType === 'finale') {
+                skipBtn.classList.add('hidden');
+            } else {
+                skipBtn.classList.remove('hidden');
+            }
 
             // Reset Game Score Display
             currentGameScore = 0;
             document.getElementById('game-score').innerText = `Score: 0 / ${ch.targetScore}`;
-            document.getElementById('game-status-msg').innerText = canProceed ? "Chapter unlocked! Feel free to replay or move on." : "Complete the challenge to unlock the next destination!";
+            document.getElementById('game-status-msg').innerText = canProceed ? "Chapter unlocked! Replay or move on." : "Complete or skip to unlock next stop!";
 
             // Overlay setup
             const overlay = document.getElementById('canvas-overlay');
@@ -466,28 +474,22 @@
                 startBtn.innerHTML = '<i class="fa-solid fa-heart"></i> Open Ran’s Love Card';
             } else {
                 document.getElementById('overlay-icon').innerText = getChapterIcon(ch.gameType);
-                document.getElementById('overlay-title').innerText = `Play: ${ch.title.split(' ')[0]} Mini-Game`;
+                document.getElementById('overlay-title').innerText = `Play Mini-Game`;
                 document.getElementById('overlay-desc').innerText = ch.instruction;
-                startBtn.innerHTML = '<i class="fa-solid fa-play"></i> Start Chapter Challenge';
+                startBtn.innerHTML = '<i class="fa-solid fa-play"></i> Start Challenge';
             }
 
             cancelAnimationFrame(gameLoopId);
             gameActive = false;
             resizeCanvas();
-            drawStaticChapterBackground(ch.gameType);
+            drawStaticBackground(ch.gameType);
         }
 
         function getChapterIcon(type) {
             const map = {
-                packing: '✈️',
-                camperDrive: '🚐',
-                marineRoom: '🌊',
-                stargazing: '✨',
-                route66: '🚗',
-                eagleFlight: '🦅',
-                horseshoeSnap: '📸',
-                vegasMemory: '🎰',
-                finale: '❤️'
+                packing: '✈️', camperDrive: '🚐', marineRoom: '🌊',
+                stargazing: '✨', route66: '🚗', eagleFlight: '🦅',
+                horseshoeSnap: '📸', vegasMemory: '🎰', finale: '❤️'
             };
             return map[type] || '💖';
         }
@@ -497,6 +499,10 @@
             if (currentChapterIdx < 0) currentChapterIdx = 0;
             if (currentChapterIdx >= chapters.length) currentChapterIdx = chapters.length - 1;
             renderChapter();
+        }
+
+        function skipMiniGame() {
+            completeChapter();
         }
 
         function startCurrentGame() {
@@ -529,14 +535,15 @@
 
         function completeChapter() {
             gameActive = false;
+            cancelAnimationFrame(gameLoopId);
             chapterCompleted[currentChapterIdx] = true;
             playWinSound();
             
             document.getElementById('game-status-msg').innerText = "🎉 Goal Achieved! Next Chapter Unlocked!";
             document.getElementById('next-btn').disabled = false;
 
-            // Show temporary victory banner on canvas
-            ctx.fillStyle = "rgba(15, 23, 42, 0.85)";
+            // Draw Victory Screen on Canvas
+            ctx.fillStyle = "rgba(15, 23, 42, 0.88)";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
             ctx.fillStyle = "#f43f5e";
@@ -549,406 +556,379 @@
             ctx.fillText("Max says: Great job, my love!", canvas.width / 2, canvas.height / 2 + 25);
         }
 
-        let packingPlayerX = 0;
-        let packingItems = [];
-
-        function initPackingGame() {
-            packingPlayerX = canvas.width / 2;
-            packingItems = [];
+        function drawStaticBackground(gameType) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#0f172a";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // Touch & Mouse Control
-            const moveHandler = (e) => {
+            // Draw simple thematic backdrop
+            ctx.fillStyle = "#334155";
+            ctx.font = "48px serif";
+            ctx.textAlign = "center";
+            ctx.fillText(getChapterIcon(gameType), canvas.width / 2, canvas.height / 2);
+        }
+
+        // ==================== MINI GAME 1: PACKING ====================
+        function initPackingGame() {
+            let posX = canvas.width / 2;
+            let items = [];
+            
+            const handleMove = (e) => {
                 const rect = canvas.getBoundingClientRect();
                 const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                packingPlayerX = clientX - rect.left;
+                posX = clientX - rect.left;
             };
-            canvas.onmousemove = moveHandler;
-            canvas.ontouchmove = moveHandler;
+            canvas.onmousemove = handleMove;
+            canvas.ontouchmove = handleMove;
 
             let frame = 0;
             function loop() {
                 if (!gameActive) return;
                 frame++;
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                // Background
                 ctx.fillStyle = "#1e293b";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // Spawn items
-                if (frame % 35 === 0) {
-                    packingItems.push({
-                        x: Math.random() * (canvas.width - 30) + 15,
+                if (frame % 30 === 0) {
+                    items.push({
+                        x: Math.random() * (canvas.width - 40) + 20,
                         y: -20,
-                        speed: Math.random() * 2 + 2,
-                        type: Math.random() > 0.3 ? '💼' : '🛂'
+                        speed: Math.random() * 2 + 2.5,
+                        icon: Math.random() > 0.4 ? '💼' : '🛂'
                     });
                 }
 
-                // Draw Backpack Player
+                // Player Basket
                 ctx.fillStyle = "#f43f5e";
                 ctx.beginPath();
-                ctx.roundRect(packingPlayerX - 35, canvas.height - 50, 70, 40, 10);
+                ctx.roundRect(posX - 40, canvas.height - 45, 80, 35, 10);
                 ctx.fill();
                 ctx.fillStyle = "#ffffff";
-                ctx.font = "14px Inter";
+                ctx.font = "13px Inter";
                 ctx.textAlign = "center";
-                ctx.fillText("🎒 Ran's Bag", packingPlayerX, canvas.height - 25);
+                ctx.fillText("🎒 Ran's Bag", posX, canvas.height - 23);
 
-                // Update & Draw Items
-                for (let i = packingItems.length - 1; i >= 0; i--) {
-                    const item = packingItems[i];
+                // Items
+                for (let i = items.length - 1; i >= 0; i--) {
+                    const item = items[i];
                     item.y += item.speed;
-                    
                     ctx.font = "24px serif";
-                    ctx.fillText(item.type, item.x, item.y);
+                    ctx.fillText(item.icon, item.x, item.y);
 
-                    // Catch Check
-                    if (item.y >= canvas.height - 60 && item.y <= canvas.height - 10 && Math.abs(item.x - packingPlayerX) < 40) {
-                        packingItems.splice(i, 1);
+                    if (item.y >= canvas.height - 55 && item.y <= canvas.height - 10 && Math.abs(item.x - posX) < 45) {
+                        items.splice(i, 1);
                         currentGameScore++;
                         playChimeSound(600, 0.1);
                         document.getElementById('game-score').innerText = `Score: ${currentGameScore} / 10`;
-                        if (currentGameScore >= 10) {
-                            completeChapter();
-                            return;
-                        }
+                        if (currentGameScore >= 10) completeChapter();
                     } else if (item.y > canvas.height) {
-                        packingItems.splice(i, 1);
+                        items.splice(i, 1);
                     }
                 }
-
                 gameLoopId = requestAnimationFrame(loop);
             }
             loop();
         }
 
-        let camperX = 0;
-        let roadObstacles = [];
-
+        // ==================== MINI GAME 2: CAMPER DRIVE ====================
         function initCamperGame() {
-            camperX = canvas.width / 2;
-            roadObstacles = [];
-
-            const moveHandler = (e) => {
+            let camperX = canvas.width / 2;
+            let objects = [];
+            
+            const handleMove = (e) => {
                 const rect = canvas.getBoundingClientRect();
                 const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                camperX = Math.max(40, Math.min(canvas.width - 40, clientX - rect.left));
+                camperX = clientX - rect.left;
             };
-            canvas.onmousemove = moveHandler;
-            canvas.ontouchmove = moveHandler;
+            canvas.onmousemove = handleMove;
+            canvas.ontouchmove = handleMove;
 
             let frame = 0;
             function loop() {
                 if (!gameActive) return;
                 frame++;
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#0f172a";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // Coastal Highway Background
-                ctx.fillStyle = "#0284c7"; // Ocean
-                ctx.fillRect(0, 0, canvas.width * 0.25, canvas.height);
-                ctx.fillStyle = "#334155"; // Asphalt
-                ctx.fillRect(canvas.width * 0.25, 0, canvas.width * 0.75, canvas.height);
-
-                // Road Center lines
-                ctx.strokeStyle = "#fef08a";
-                ctx.setLineDash([20, 20]);
+                // Road markings
+                ctx.strokeStyle = "#475569";
                 ctx.lineWidth = 4;
+                ctx.setLineDash([20, 15]);
                 ctx.beginPath();
-                ctx.moveTo(canvas.width * 0.6, 0);
-                ctx.lineTo(canvas.width * 0.6, canvas.height);
+                ctx.moveTo(canvas.width / 2, 0);
+                ctx.lineTo(canvas.width / 2, canvas.height);
                 ctx.stroke();
                 ctx.setLineDash([]);
 
-                // Spawn Love Hearts & Traffic
-                if (frame % 45 === 0) {
-                    roadObstacles.push({
-                        x: canvas.width * 0.3 + Math.random() * (canvas.width * 0.65),
+                if (frame % 35 === 0) {
+                    objects.push({
+                        x: Math.random() * (canvas.width - 60) + 30,
                         y: -30,
                         speed: 3,
-                        isHeart: Math.random() > 0.3
+                        type: '💖'
                     });
                 }
 
-                // Draw Camper (Player)
-                ctx.fillStyle = "#38bdf8";
-                ctx.beginPath();
-                ctx.roundRect(camperX - 25, canvas.height - 70, 50, 60, 8);
-                ctx.fill();
-                ctx.fillStyle = "#ffffff";
-                ctx.font = "20px serif";
+                // Camper
+                ctx.font = "36px serif";
                 ctx.textAlign = "center";
-                ctx.fillText("🚐", camperX, canvas.height - 35);
+                ctx.fillText("🚐", camperX, canvas.height - 30);
 
-                // Update Obstacles
-                for (let i = roadObstacles.length - 1; i >= 0; i--) {
-                    const obs = roadObstacles[i];
-                    obs.y += obs.speed;
+                for (let i = objects.length - 1; i >= 0; i--) {
+                    const obj = objects[i];
+                    obj.y += obj.speed;
+                    ctx.font = "26px serif";
+                    ctx.fillText(obj.type, obj.x, obj.y);
 
-                    ctx.font = "22px serif";
-                    ctx.fillText(obs.isHeart ? "💖" : "🚗", obs.x, obs.y);
-
-                    // Hit Detection
-                    if (Math.abs(obs.x - camperX) < 35 && Math.abs(obs.y - (canvas.height - 40)) < 30) {
-                        if (obs.isHeart) {
-                            currentGameScore++;
-                            playChimeSound(700, 0.1);
-                            document.getElementById('game-score').innerText = `Score: ${currentGameScore} / 8`;
-                            roadObstacles.splice(i, 1);
-                            if (currentGameScore >= 8) {
-                                completeChapter();
-                                return;
-                            }
-                        } else {
-                            // Hit traffic car penalty
-                            playChimeSound(200, 0.2);
-                            roadObstacles.splice(i, 1);
-                        }
-                    } else if (obs.y > canvas.height) {
-                        roadObstacles.splice(i, 1);
+                    if (obj.y >= canvas.height - 60 && obj.y <= canvas.height - 10 && Math.abs(obj.x - camperX) < 40) {
+                        objects.splice(i, 1);
+                        currentGameScore++;
+                        playChimeSound(650, 0.1);
+                        document.getElementById('game-score').innerText = `Score: ${currentGameScore} / 8`;
+                        if (currentGameScore >= 8) completeChapter();
+                    } else if (obj.y > canvas.height) {
+                        objects.splice(i, 1);
                     }
                 }
-
                 gameLoopId = requestAnimationFrame(loop);
             }
             loop();
         }
 
-        let waveHeight = 0;
-        let waveDir = 1;
-
+        // ==================== MINI GAME 3: MARINE ROOM (FIXED & WORKING) ====================
         function initMarineRoomGame() {
-            canvas.onclick = () => {
+            let waveHeight = 0;
+            let waveSpeed = 0.04;
+            let wavePhase = 0;
+
+            const handleClick = () => {
                 if (!gameActive) return;
-                // High tide peak match (wave near glass window)
-                if (waveHeight > 60) {
+                const peak = Math.sin(wavePhase);
+                if (peak > 0.75) {
                     currentGameScore++;
-                    playChimeSound(800, 0.15);
+                    playChimeSound(800, 0.2);
                     document.getElementById('game-score').innerText = `Score: ${currentGameScore} / 6`;
                     if (currentGameScore >= 6) {
                         canvas.onclick = null;
+                        canvas.ontouchstart = null;
                         completeChapter();
                     }
                 }
             };
+            canvas.onclick = handleClick;
+            canvas.ontouchstart = (e) => { e.preventDefault(); handleClick(); };
 
             function loop() {
                 if (!gameActive) return;
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                // Ocean window view background
-                waveHeight += waveDir * 1.5;
-                if (waveHeight > 90 || waveHeight < 10) waveDir *= -1;
-
-                // Candlelit Restaurant interior frame
-                ctx.fillStyle = "#0f172a";
+                wavePhase += waveSpeed;
+                ctx.fillStyle = "#0284c7";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // Window View
+                // Ocean window frame
                 ctx.fillStyle = "#0369a1";
-                ctx.fillRect(40, 40, canvas.width - 80, canvas.height - 120);
-
-                // Crashing Wave
-                ctx.fillStyle = "#38bdf8";
+                const currentWaveY = canvas.height - (Math.sin(wavePhase) * 80 + 100);
+                
                 ctx.beginPath();
-                ctx.arc(canvas.width / 2, canvas.height - 80 - waveHeight, canvas.width * 0.4, 0, Math.PI, true);
+                ctx.moveTo(0, canvas.width);
+                for(let x = 0; x <= canvas.width; x += 10) {
+                    ctx.lineTo(x, currentWaveY + Math.sin(x * 0.02 + wavePhase * 2) * 15);
+                }
+                ctx.lineTo(canvas.width, canvas.height);
+                ctx.lineTo(0, canvas.height);
+                ctx.fillStyle = "rgba(56, 189, 248, 0.7)";
                 ctx.fill();
 
-                // Window Frame Grill
-                ctx.strokeStyle = "#475569";
+                // Window Glass Frame
+                ctx.strokeStyle = "#f8fafc";
                 ctx.lineWidth = 8;
-                ctx.strokeRect(40, 40, canvas.width - 80, canvas.height - 120);
+                ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
 
-                // Dining Table
-                ctx.fillStyle = "#991b1b";
-                ctx.fillRect(canvas.width * 0.2, canvas.height - 70, canvas.width * 0.6, 50);
-                ctx.fillStyle = "#fef08a";
-                ctx.font = "24px serif";
+                // Table candle inside
+                ctx.font = "32px serif";
                 ctx.textAlign = "center";
-                ctx.fillText("🕯️ 🍷 🍽️ 🍷 🕯️", canvas.width / 2, canvas.height - 45);
+                ctx.fillText("🍽️🍷🕯️", canvas.width / 2, canvas.height - 30);
 
-                // High tide indicator
-                ctx.fillStyle = waveHeight > 60 ? "#4ade80" : "#f43f5e";
-                ctx.font = "bold 14px Inter";
-                ctx.fillText(waveHeight > 60 ? "🌊 HIGH TIDE SPLASH! CLICK NOW!" : "Waiting for high tide wave...", canvas.width / 2, 30);
+                // Timing Indicator
+                const peakVal = Math.sin(wavePhase);
+                if (peakVal > 0.75) {
+                    ctx.fillStyle = "#facc15";
+                    ctx.font = "bold 20px Inter";
+                    ctx.fillText("🌊 HIGH TIDE WAVE! CLICK NOW! 🌊", canvas.width / 2, 50);
+                } else {
+                    ctx.fillStyle = "#ffffff";
+                    ctx.font = "14px Inter";
+                    ctx.fillText("Wait for the high tide wave to hit the glass window...", canvas.width / 2, 50);
+                }
 
                 gameLoopId = requestAnimationFrame(loop);
             }
             loop();
         }
 
-        let starPoints = [];
-        let connectedStars = 0;
-
+        // ==================== MINI GAME 4: STARGAZING ====================
         function initStargazingGame() {
-            starPoints = [];
-            connectedStars = 0;
-            const totalStars = 5;
-
-            for (let i = 0; i < totalStars; i++) {
-                starPoints.push({
-                    x: (canvas.width * 0.15) + (i * (canvas.width * 0.18)),
-                    y: canvas.height * 0.3 + Math.sin(i) * 40,
+            let stars = [];
+            for(let i = 0; i < 12; i++) {
+                stars.push({
+                    x: Math.random() * (canvas.width - 60) + 30,
+                    y: Math.random() * (canvas.height - 80) + 30,
                     clicked: false
                 });
             }
 
-            canvas.onclick = (e) => {
-                if (!gameActive) return;
+            const handleClick = (e) => {
                 const rect = canvas.getBoundingClientRect();
-                const clickX = e.clientX - rect.left;
-                const clickY = e.clientY - rect.top;
+                const clickX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+                const clickY = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
 
-                starPoints.forEach((s) => {
-                    if (!s.clicked && Math.hypot(s.x - clickX, s.y - clickY) < 30) {
-                        s.clicked = true;
-                        connectedStars++;
-                        playChimeSound(500 + connectedStars * 100, 0.2);
-                        document.getElementById('game-score').innerText = `Score: ${connectedStars} / 5`;
-                        if (connectedStars >= totalStars) {
+                stars.forEach(star => {
+                    if (!star.clicked && Math.hypot(star.x - clickX, star.y - clickY) < 30) {
+                        star.clicked = true;
+                        currentGameScore++;
+                        playChimeSound(700 + currentGameScore * 50, 0.15);
+                        document.getElementById('game-score').innerText = `Score: ${currentGameScore} / 5`;
+                        if (currentGameScore >= 5) {
                             canvas.onclick = null;
+                            canvas.ontouchstart = null;
                             completeChapter();
                         }
                     }
                 });
             };
+            canvas.onclick = handleClick;
+            canvas.ontouchstart = (e) => { e.preventDefault(); handleClick(e); };
 
             function loop() {
                 if (!gameActive) return;
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                // Desert Night Background
                 ctx.fillStyle = "#090d16";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // Skull Rock Silhouette
-                ctx.fillStyle = "#1e1b4b";
-                ctx.beginPath();
-                ctx.arc(canvas.width * 0.8, canvas.height, 120, 0, Math.PI, true);
-                ctx.fill();
-
-                // Constellation lines
-                ctx.strokeStyle = "rgba(244, 63, 94, 0.6)";
-                ctx.lineWidth = 3;
-                ctx.beginPath();
-                let started = false;
-                starPoints.forEach((s) => {
-                    if (s.clicked) {
-                        if (!started) { ctx.moveTo(s.x, s.y); started = true; }
-                        else { ctx.lineTo(s.x, s.y); }
-                    }
-                });
-                ctx.stroke();
-
-                // Draw Stars
-                starPoints.forEach((s, idx) => {
-                    ctx.fillStyle = s.clicked ? "#f43f5e" : "#fef08a";
-                    ctx.font = "26px serif";
+                stars.forEach(star => {
+                    ctx.font = star.clicked ? "32px serif" : "24px serif";
                     ctx.textAlign = "center";
-                    ctx.fillText(s.clicked ? "💖" : "⭐", s.x, s.y + 8);
+                    ctx.fillText(star.clicked ? "💖" : "✨", star.x, star.y);
                 });
-
-                ctx.fillStyle = "#cbd5e1";
-                ctx.font = "12px Inter";
-                ctx.fillText("Click the glowing stars to draw Max & Ran's constellation", canvas.width / 2, canvas.height - 15);
 
                 gameLoopId = requestAnimationFrame(loop);
             }
             loop();
         }
 
+        // ==================== MINI GAME 5: ROUTE 66 ====================
         function initRoute66Game() {
-            // Reuses camper steering logic with Route 66 themes
-            initCamperGame();
+            let signs = [];
+            let frame = 0;
+
+            const handleClick = (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const clickX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+                const clickY = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+
+                for (let i = signs.length - 1; i >= 0; i--) {
+                    const s = signs[i];
+                    if (Math.hypot(s.x - clickX, s.y - clickY) < 35) {
+                        signs.splice(i, 1);
+                        currentGameScore++;
+                        playChimeSound(750, 0.1);
+                        document.getElementById('game-score').innerText = `Score: ${currentGameScore} / 8`;
+                        if (currentGameScore >= 8) {
+                            canvas.onclick = null;
+                            completeChapter();
+                        }
+                        break;
+                    }
+                }
+            };
+            canvas.onclick = handleClick;
+
+            function loop() {
+                if (!gameActive) return;
+                frame++;
+                ctx.fillStyle = "#451a03";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                if (frame % 40 === 0 && signs.length < 5) {
+                    signs.push({
+                        x: Math.random() * (canvas.width - 80) + 40,
+                        y: Math.random() * (canvas.height - 80) + 40,
+                        life: 120
+                    });
+                }
+
+                for (let i = signs.length - 1; i >= 0; i--) {
+                    const s = signs[i];
+                    s.life--;
+                    ctx.font = "28px serif";
+                    ctx.textAlign = "center";
+                    ctx.fillText("🛣️", s.x, s.y);
+                    if (s.life <= 0) signs.splice(i, 1);
+                }
+
+                gameLoopId = requestAnimationFrame(loop);
+            }
+            loop();
         }
 
-        let eagleY = 150;
-        let eagleVelocity = 0;
-        let canyonFeathers = [];
-
+        // ==================== MINI GAME 6: EAGLE FLIGHT ====================
         function initEagleFlightGame() {
-            eagleY = canvas.height / 2;
-            eagleVelocity = 0;
-            canyonFeathers = [];
-
-            const flap = () => {
-                if (!gameActive) return;
-                eagleVelocity = -5;
-                playChimeSound(400, 0.1);
+            let eagleY = canvas.height / 2;
+            let feathers = [];
+            
+            const handleMove = (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                eagleY = clientY - rect.top;
             };
-
-            canvas.onclick = flap;
-            window.onkeydown = (e) => { if (e.code === 'Space') flap(); };
+            canvas.onmousemove = handleMove;
+            canvas.ontouchmove = handleMove;
 
             let frame = 0;
             function loop() {
                 if (!gameActive) return;
                 frame++;
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                // Canyon Background
-                ctx.fillStyle = "#7c2d12";
+                ctx.fillStyle = "#78350f";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // Rim Silhouettes
-                ctx.fillStyle = "#451a03";
-                ctx.fillRect(0, 0, canvas.width, 40);
-                ctx.fillRect(0, canvas.height - 40, canvas.width, 40);
-
-                // Eagle Gravity
-                eagleVelocity += 0.25;
-                eagleY += eagleVelocity;
-                eagleY = Math.max(50, Math.min(canvas.height - 50, eagleY));
-
-                // Draw Eagle
-                ctx.font = "28px serif";
-                ctx.textAlign = "center";
-                ctx.fillText("🦅", 80, eagleY);
-
-                // Spawn Feathers
-                if (frame % 50 === 0) {
-                    canyonFeathers.push({
+                if (frame % 35 === 0) {
+                    feathers.push({
                         x: canvas.width + 20,
-                        y: 60 + Math.random() * (canvas.height - 120)
+                        y: Math.random() * (canvas.height - 40) + 20,
+                        speed: 3.5
                     });
                 }
 
-                // Update Feathers
-                for (let i = canyonFeathers.length - 1; i >= 0; i--) {
-                    const f = canyonFeathers[i];
-                    f.x -= 3;
+                // Eagle
+                ctx.font = "32px serif";
+                ctx.textAlign = "center";
+                ctx.fillText("🦅", 60, eagleY);
+
+                for (let i = feathers.length - 1; i >= 0; i--) {
+                    const f = feathers[i];
+                    f.x -= f.speed;
+                    ctx.font = "24px serif";
                     ctx.fillText("🪶", f.x, f.y);
 
-                    if (Math.abs(f.x - 80) < 30 && Math.abs(f.y - eagleY) < 30) {
-                        canyonFeathers.splice(i, 1);
+                    if (Math.hypot(f.x - 60, f.y - eagleY) < 35) {
+                        feathers.splice(i, 1);
                         currentGameScore++;
-                        playChimeSound(650, 0.1);
+                        playChimeSound(800, 0.1);
                         document.getElementById('game-score').innerText = `Score: ${currentGameScore} / 7`;
-                        if (currentGameScore >= 7) {
-                            canvas.onclick = null;
-                            window.onkeydown = null;
-                            completeChapter();
-                            return;
-                        }
+                        if (currentGameScore >= 7) completeChapter();
                     } else if (f.x < -20) {
-                        canyonFeathers.splice(i, 1);
+                        feathers.splice(i, 1);
                     }
                 }
-
                 gameLoopId = requestAnimationFrame(loop);
             }
             loop();
         }
 
-        let targetBarX = 0;
-        let barDir = 1;
-
+        // ==================== MINI GAME 7: HORSESHOE SNAP ====================
         function initHorseshoeSnapGame() {
-            canvas.onclick = () => {
+            let sunAngle = 0;
+
+            const handleClick = () => {
                 if (!gameActive) return;
-                // Check if shutter stopped in center zone
-                const center = canvas.width / 2;
-                if (Math.abs(targetBarX - center) < 35) {
+                if (Math.abs(Math.sin(sunAngle)) > 0.85) {
                     currentGameScore++;
                     playChimeSound(900, 0.2);
                     document.getElementById('game-score').innerText = `Score: ${currentGameScore} / 5`;
@@ -956,196 +936,94 @@
                         canvas.onclick = null;
                         completeChapter();
                     }
-                } else {
-                    playChimeSound(200, 0.15);
                 }
             };
+            canvas.onclick = handleClick;
 
             function loop() {
                 if (!gameActive) return;
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                // Sunset background gradient
-                const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-                grad.addColorStop(0, "#ea580c");
-                grad.addColorStop(0.5, "#c026d3");
-                grad.addColorStop(1, "#1e1b4b");
-                ctx.fillStyle = grad;
+                sunAngle += 0.03;
+                ctx.fillStyle = "#ea580c";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // Horseshoe Bend River curve line
+                // River curve
                 ctx.strokeStyle = "#0284c7";
-                ctx.lineWidth = 18;
+                ctx.lineWidth = 20;
                 ctx.beginPath();
-                ctx.arc(canvas.width / 2, canvas.height / 2 + 20, 70, 0, Math.PI);
+                ctx.arc(canvas.width / 2, canvas.height / 2, 70, 0, Math.PI);
                 ctx.stroke();
 
-                // Target Alignment Zone
-                ctx.fillStyle = "rgba(74, 222, 128, 0.4)";
-                ctx.fillRect(canvas.width / 2 - 35, 20, 70, canvas.height - 40);
-
-                // Moving Shutter Bar
-                targetBarX += barDir * 4;
-                if (targetBarX > canvas.width - 20 || targetBarX < 20) barDir *= -1;
-
-                ctx.fillStyle = "#ffffff";
-                ctx.fillRect(targetBarX - 4, 10, 8, canvas.height - 20);
-
-                ctx.fillStyle = "#ffffff";
-                ctx.font = "bold 13px Inter";
+                // Sun alignment
+                const sunX = canvas.width / 2 + Math.cos(sunAngle) * 120;
+                const sunY = canvas.height / 2 + Math.sin(sunAngle) * 60;
+                ctx.font = "36px serif";
                 ctx.textAlign = "center";
-                ctx.fillText("📸 Tap when bar lines up with green sunset center!", canvas.width / 2, canvas.height - 15);
+                ctx.fillText("☀️", sunX, sunY);
+
+                ctx.font = "28px serif";
+                ctx.fillText("📸 Click to Snap Photo!", canvas.width / 2, canvas.height - 20);
 
                 gameLoopId = requestAnimationFrame(loop);
             }
             loop();
         }
 
-        let vegasCards = [];
-        let flippedCards = [];
-
+        // ==================== MINI GAME 8: VEGAS SLOT ====================
         function initVegasMemoryGame() {
-            const icons = ['💍', '🎰', '💖', '💍', '🎰', '💖'];
-            vegasCards = icons.sort(() => Math.random() - 0.5).map((icon, id) => ({
-                id,
-                icon,
-                flipped: false,
-                matched: false
-            }));
-            flippedCards = [];
+            let symbols = ['💖', '🎰', '💎', '🌸', '✨'];
+            let currentSym = '🎰';
 
-            canvas.onclick = (e) => {
-                if (!gameActive || flippedCards.length >= 2) return;
-                const rect = canvas.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-
-                const colWidth = canvas.width / 3;
-                const rowHeight = canvas.height / 2;
-
-                const col = Math.floor(x / colWidth);
-                const row = Math.floor(y / rowHeight);
-                const idx = row * 3 + col;
-
-                const card = vegasCards[idx];
-                if (card && !card.flipped && !card.matched) {
-                    card.flipped = true;
-                    flippedCards.push(card);
-                    playChimeSound(600, 0.1);
-
-                    if (flippedCards.length === 2) {
-                        setTimeout(checkVegasMatch, 700);
+            const handleClick = () => {
+                if (!gameActive) return;
+                if (currentSym === '💖') {
+                    currentGameScore++;
+                    playChimeSound(950, 0.2);
+                    document.getElementById('game-score').innerText = `Score: ${currentGameScore} / 5`;
+                    if (currentGameScore >= 5) {
+                        canvas.onclick = null;
+                        completeChapter();
                     }
                 }
             };
+            canvas.onclick = handleClick;
 
-            function checkVegasMatch() {
-                const [c1, c2] = flippedCards;
-                if (c1.icon === c2.icon) {
-                    c1.matched = true;
-                    c2.matched = true;
-                    currentGameScore += 2;
-                    playChimeSound(850, 0.2);
-                    document.getElementById('game-score').innerText = `Score: ${currentGameScore} / 6`;
-                    if (currentGameScore >= 6) {
-                        completeChapter();
-                    }
-                } else {
-                    c1.flipped = false;
-                    c2.flipped = false;
-                }
-                flippedCards = [];
-            }
-
+            let frame = 0;
             function loop() {
                 if (!gameActive) return;
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                // Vegas Neon Frame
-                ctx.fillStyle = "#0f172a";
+                frame++;
+                ctx.fillStyle = "#581c87";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                const colW = canvas.width / 3;
-                const rowH = canvas.height / 2;
+                if (frame % 15 === 0) {
+                    currentSym = symbols[Math.floor(Math.random() * symbols.length)];
+                }
 
-                vegasCards.forEach((card, i) => {
-                    const c = i % 3;
-                    const r = Math.floor(i / 3);
-                    const x = c * colW + 10;
-                    const y = r * rowH + 10;
-                    const w = colW - 20;
-                    const h = rowH - 20;
+                ctx.fillStyle = "#facc15";
+                ctx.fillRect(canvas.width / 2 - 60, canvas.height / 2 - 60, 120, 120);
+                
+                ctx.font = "54px serif";
+                ctx.textAlign = "center";
+                ctx.fillText(currentSym, canvas.width / 2, canvas.height / 2 + 18);
 
-                    ctx.fillStyle = card.flipped || card.matched ? "#1e293b" : "#e11d48";
-                    ctx.strokeStyle = "#fbbf24";
-                    ctx.lineWidth = 3;
-                    ctx.beginPath();
-                    ctx.roundRect(x, y, w, h, 12);
-                    ctx.fill();
-                    ctx.stroke();
-
-                    ctx.font = "32px serif";
-                    ctx.textAlign = "center";
-                    if (card.flipped || card.matched) {
-                        ctx.fillText(card.icon, x + w / 2, y + h / 2 + 10);
-                    } else {
-                        ctx.fillStyle = "#ffffff";
-                        ctx.fillText("🎰", x + w / 2, y + h / 2 + 10);
-                    }
-                });
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "14px Inter";
+                ctx.fillText("Click when 💖 appears!", canvas.width / 2, canvas.height - 25);
 
                 gameLoopId = requestAnimationFrame(loop);
             }
             loop();
-        }
-
-        function drawStaticChapterBackground(type) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-            grad.addColorStop(0, '#1e1b4b');
-            grad.addColorStop(1, '#881337');
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 20px Georgia';
-            ctx.textAlign = 'center';
-            ctx.fillText('Tap "Start Chapter Challenge" to play!', canvas.width / 2, canvas.height / 2);
         }
 
         function showFinaleModal() {
             document.getElementById('finale-modal').classList.remove('hidden');
-            triggerConfettiBurst();
+            playWinSound();
         }
 
         function closeFinaleModal() {
             document.getElementById('finale-modal').classList.add('hidden');
         }
 
-        function triggerConfettiBurst() {
-            playWinSound();
-            for (let i = 0; i < 50; i++) {
-                setTimeout(() => {
-                    const heart = document.createElement('div');
-                    heart.innerText = ['❤️', '💖', '💐', '✨', '🌸'][Math.floor(Math.random() * 5)];
-                    heart.style.position = 'fixed';
-                    heart.style.left = Math.random() * 100 + 'vw';
-                    heart.style.top = '100vh';
-                    heart.style.fontSize = (Math.random() * 20 + 20) + 'px';
-                    heart.style.zIndex = '9999';
-                    heart.style.transition = 'all 3s ease-out';
-                    document.body.appendChild(heart);
-
-                    setTimeout(() => {
-                        heart.style.transform = `translateY(-110vh) rotate(${Math.random() * 360}deg)`;
-                        heart.style.opacity = '0';
-                    }, 50);
-
-                    setTimeout(() => heart.remove(), 3200);
-                }, i * 50);
-            }
-        }
-
+        // Initialization
         window.onload = () => {
             createFloatingHearts();
             renderChapter();
