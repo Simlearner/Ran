@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Vietnamese Women's Day, My Love | Max & Ran's Adventure</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        desert: {
+                            50: '#fffaf5',
+                            100: '#feebd9',
+                            300: '#f9b982',
+                            500: '#e07a5f',
+                            700: '#9b3d27',
+                        },
+                        sunset: {
+                            purple: '#3d405b',
+                            rose: '#f2cc8f',
+                            coral: '#e07a5f',
+                            teal: '#81b29a'
+                        }
+                    },
+                    fontFamily: {
+                        script: ['"Dancing Script"', 'cursive'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(224, 122, 95, 0.5);
+            border-radius: 3px;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(1deg); }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .dark-glass {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen overflow-x-hidden selection:bg-rose-500 selection:text-white">
+
+    <!-- Background Animated Canvas -->
+    <canvas id="bgCanvas" class="fixed inset-0 pointer-events-none z-0 opacity-40"></canvas>
+
+    <!-- Top Music & Progress Navigation -->
+    <header class="fixed top-0 left-0 right-0 z-50 px-4 py-3 bg-slate-950/80 backdrop-blur-md border-b border-white/10 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <span class="p-2 bg-gradient-to-tr from-rose-500 to-amber-400 rounded-full text-white shadow-lg shadow-rose-500/30">
+                <i data-lucide="heart" class="w-5 h-5 fill-current"></i>
+            </span>
+            <div>
+                <h1 class="text-xs text-rose-300 font-medium tracking-widest uppercase">Max & Ran</h1>
+                <p class="text-sm font-semibold text-white">Vietnamese Women's Day 🌹</p>
+            </div>
+        </div>
+
+        <!-- Progress Tracker Indicator -->
+        <div class="hidden md:flex items-center space-x-2 text-xs text-slate-300">
+            <span id="chapterCount" class="font-semibold text-amber-400">Chapter 1</span>
+            <span>/ 10</span>
+        </div>
+
+        <button id="bgMusicBtn" onclick="toggleMusic()" class="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-slate-800/80 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700 transition">
+            <i id="musicIcon" data-lucide="music" class="w-4 h-4 text-rose-400"></i>
+            <span id="musicText">Play Music 🎵</span>
+        </button>
+    </header>
+
+    <!-- Audio Element (Ambient Relaxing Instrumental) -->
+    <audio id="bgAudio" loop preload="auto">
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3" type="audio/mpeg">
+    </audio>
+
+    <main class="relative z-10 max-w-5xl mx-auto px-4 pt-24 pb-16 min-h-screen flex flex-col justify-between">
+
+        <!-- Chapter Progress Bar -->
+        <div class="w-full bg-slate-800/60 rounded-full h-1.5 mb-8 overflow-hidden border border-slate-700/50">
+            <div id="progressBar" class="bg-gradient-to-r from-rose-500 via-amber-400 to-emerald-400 h-full w-[10%] transition-all duration-700 ease-out"></div>
+        </div>
+
+        <!-- Main Content Card Box -->
+        <div id="storyCard" class="relative rounded-3xl dark-glass p-6 md:p-10 shadow-2xl transition-all duration-500 my-auto border border-white/10 min-h-[480px] flex flex-col justify-between overflow-hidden">
+            
+            <!-- Chapter Tag & Location Pill -->
+            <div id="cardHeader" class="flex flex-wrap items-center justify-between gap-3 mb-6">
+                <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 text-xs font-medium">
+                    <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+                    <span id="locationTag">Munich Airport (MUC) to LAX</span>
+                </div>
+                <div id="dateTag" class="text-xs text-slate-400 font-mono flex items-center gap-1">
+                    <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                    <span>The Great Southwest Expedition</span>
+                </div>
+            </div>
+
+            <!-- Main Story Visual & Content Section -->
+            <div class="grid md:grid-cols-12 gap-8 items-center my-2">
+                <!-- Visual Icon / Scene Illustration Area -->
+                <div class="md:col-span-5 flex flex-col items-center justify-center">
+                    <div id="sceneContainer" class="relative w-48 h-48 md:w-64 md:h-64 rounded-2xl bg-gradient-to-b from-slate-800/80 to-slate-900/90 border border-slate-700 flex items-center justify-center p-6 shadow-inner group">
+                        <div id="sceneGlow" class="absolute inset-0 rounded-2xl bg-rose-500/10 blur-xl group-hover:bg-rose-500/20 transition"></div>
+                        <div id="sceneGraphic" class="relative z-10 text-center flex flex-col items-center">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Text Story Content -->
+                <div class="md:col-span-7 space-y-4">
+                    <h2 id="chapterTitle" class="text-2xl md:text-3xl font-bold text-white font-script md:font-sans tracking-wide leading-tight bg-gradient-to-r from-white via-rose-100 to-amber-200 bg-clip-text text-transparent">
+                        Leaving Germany Behind
+                    </h2>
+                    
+                    <div id="chapterStory" class="text-slate-300 text-sm md:text-base leading-relaxed space-y-3 font-light custom-scrollbar max-h-60 overflow-y-auto pr-2">
+                        <!-- Dynamic Text -->
+                    </div>
+
+                    <!-- Interactive Memory Quote / Max's Love Note -->
+                    <div id="loveNoteBox" class="mt-4 p-3.5 rounded-xl bg-rose-950/40 border border-rose-500/30 text-rose-200 text-xs md:text-sm italic flex items-start space-x-3">
+                        <i data-lucide="quote" class="w-5 h-5 text-rose-400 shrink-0 mt-0.5"></i>
+                        <span id="loveNoteText">"Every step across the ocean with you feels like the start of our favorite movie."</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chapter Navigation Footer Controls -->
+            <div class="mt-8 pt-6 border-t border-slate-800 flex items-center justify-between">
+                <button id="prevBtn" onclick="prevChapter()" class="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 font-medium text-sm transition disabled:opacity-30 disabled:cursor-not-allowed">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    <span>Previous</span>
+                </button>
+
+                <div id="dotsContainer" class="flex items-center space-x-1.5">
+                    <!-- Dots generated in JS -->
+                </div>
+
+                <button id="nextBtn" onclick="nextChapter()" class="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-600 hover:to-amber-600 text-white font-semibold text-sm shadow-lg shadow-rose-500/25 transition transform active:scale-95">
+                    <span id="nextBtnText">Next Memory</span>
+                    <i id="nextBtnIcon" data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Interactive Map Route Preview Footer -->
+        <div class="mt-6 dark-glass rounded-2xl p-4 border border-white/5 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+            <div class="flex items-center space-x-2">
+                <i data-lucide="compass" class="w-4 h-4 text-amber-400"></i>
+                <span class="font-medium text-slate-300">Route Progress:</span>
+                <span id="routeSummary">MUC ✈️ LAX 🚐 La Jolla 🌵 Joshua Tree ⛽ Route 66 🏞️ Grand Canyon 🐎 Horseshoe Bend 🎰 Las Vegas 🏙️ LA</span>
+            </div>
+            <div class="flex items-center space-x-2 text-rose-300 font-medium">
+                <span>Happy Ngày Phụ Nữ Việt Nam 20/10</span>
+                <i data-lucide="heart" class="w-3.5 h-3.5 text-rose-400 fill-current"></i>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const storyChapters = [
+            {
+                title: "1. The Flight from Munich to LA ✈️",
+                location: "Munich (MUC) ➔ Los Angeles (LAX)",
+                graphic: `
+                    <div class="relative animate-float">
+                        <i data-lucide="plane" class="w-20 h-20 text-sky-400"></i>
+                        <span class="absolute -top-1 -right-1 flex h-3 w-3">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-3 w-3 bg-sky-500"></span>
+                        </span>
+                    </div>
+                    <p class="text-xs text-sky-300 font-mono mt-3">Flight 11+ Hours</p>
+                `,
+                story: `
+                    <p>It all began back home in Germany. We packed our bags, checked our passports, and boarded our long flight out of Munich, bound for sunny California!</p>
+                    <p>High above the Atlantic, sitting side-by-side in those airplane seats, I looked at you and knew this road trip was going to be an unforgettable chapter in our lives. Thousands of miles away from daily routines, just you, me, and the open western horizon.</p>
+                `,
+                loveNote: "Max's Note: Flying halfway across the globe is easy when I'm sitting next to my favorite person in the world."
+            },
+            {
+                title: "2. Cruising LA in Our Camper 🚐",
+                location: "Los Angeles & Coast Hwy",
+                graphic: `
+                    <div class="relative animate-float">
+                        <i data-lucide="truck" class="w-20 h-20 text-amber-400"></i>
+                        <i data-lucide="sun" class="w-8 h-8 text-amber-300 absolute -top-4 -right-2 animate-spin" style="animation-duration: 12s;"></i>
+                    </div>
+                    <p class="text-xs text-amber-300 font-mono mt-3">California Dreamin'</p>
+                `,
+                story: `
+                    <p>We touched down in Los Angeles and picked up our camper van—our cozy little home on wheels for the journey!</p>
+                    <p>Steering that camper down the busy LA boulevards, under towering palm trees and cool California ocean breezes, felt like a scene right out of a movie. You sitting in the passenger seat, DJing the soundtrack, smiling as we officially began our American Southwest road trip.</p>
+                `,
+                loveNote: "Max's Note: Home isn't a fixed address anymore—it's anywhere we park our camper together."
+            },
+            {
+                title: "3. Ocean Magic at The Marine Room in La Jolla 🌊🍷",
+                location: "The Marine Room, La Jolla",
+                graphic: `
+                    <div class="relative animate-float text-center">
+                        <div class="flex items-center justify-center space-x-2">
+                            <i data-lucide="utensils" class="w-12 h-12 text-rose-400"></i>
+                            <i data-lucide="waves" class="w-12 h-12 text-teal-400"></i>
+                        </div>
+                        <p class="text-xs text-rose-300 font-mono mt-3">High Tide Dining</p>
+                    </div>
+                `,
+                story: `
+                    <p>We drove south to beautiful La Jolla for one of the most romantic dinners of our lives at <strong>The Marine Room</strong>.</p>
+                    <p>Remember sitting by those massive glass windows as the ocean waves crashed right against the glass outside? The delicate seafood, fine wine, glowing candlelight, and your radiant laugh reflecting against the dark sea. Seeing you dressed up and glowing with happiness made my heart swell.</p>
+                `,
+                loveNote: "Max's Note: You outshined the ocean views that night, Ran. Truly breathtaking."
+            },
+            {
+                title: "4. Desert Wonders in Joshua Tree & Skull Rock 🌵💀",
+                location: "Joshua Tree National Park",
+                graphic: `
+                    <div class="relative animate-float text-center">
+                        <i data-lucide="trees" class="w-20 h-20 text-emerald-400"></i>
+                        <div class="mt-1 text-amber-200 text-xs font-mono">Skull Rock 🪨</div>
+                    </div>
+                `,
+                story: `
+                    <p>Leaving the coast behind, we navigated our camper into the mystical desert of Joshua Tree National Park!</p>
+                    <p>We climbed through bizarre rock formations, snapped photos by the legendary <strong>Skull Rock</strong>, and marveled at the twisted, famous Joshua Trees standing tall under the vast desert sky. As the sun set in shades of fiery orange and purple, the desert quieted down—just us under a canopy of endless stars.</p>
+                `,
+                loveNote: "Max's Note: In the quiet vastness of the desert, loving you feels simpler and deeper than ever."
+            },
+            {
+                title: "5. Radiator Springs Vibes on Route 66 ⚡🚗",
+                location: "Route 66 - Seligman & Kingman",
+                graphic: `
+                    <div class="relative animate-float text-center">
+                        <i data-lucide="milestone" class="w-20 h-20 text-rose-400"></i>
+                        <p class="text-xs text-rose-300 font-mono mt-2">Historic Route 66</p>
+                    </div>
+                `,
+                story: `
+                    <p>Next stop: The Mother Road! We hit Historic Route 66, the real-life inspiration for the Disney Pixar <em>Cars</em> movie town of Radiator Springs!</p>
+                    <p>Vintage neon signs, retro gas pumps, old rusty classic cars, and whimsical gift shops... It felt like stepping into a nostalgic time machine. We laughed, took playful photos, and soaked in classic Americana together.</p>
+                `,
+                loveNote: "Max's Note: Life with you is the ultimate joyride—no shortcuts needed."
+            },
+            {
+                title: "6. Standing in Awe at the Grand Canyon 🏞️",
+                location: "Grand Canyon National Park",
+                graphic: `
+                    <div class="relative animate-float text-center">
+                        <i data-lucide="mountain" class="w-20 h-20 text-amber-500"></i>
+                        <p class="text-xs text-amber-300 font-mono mt-2">South Rim Vista</p>
+                    </div>
+                `,
+                story: `
+                    <p>Nothing can truly prepare you for the first moment you step up to the edge of the <strong>Grand Canyon</strong>.</p>
+                    <p>The sheer magnitude, layer upon layer of red rock carved over millions of years, left us speechless. We stood hand in hand on the rim, feeling small against the grand beauty of nature, but so deeply connected to each other.</p>
+                `,
+                loveNote: "Max's Note: As vast as the Grand Canyon is, my love for you stretches even further."
+            },
+            {
+                title: "7. Golden Hour at Horseshoe Bend 🐎🌅",
+                location: "Horseshoe Bend, Page AZ",
+                graphic: `
+                    <div class="relative animate-float text-center">
+                        <i data-lucide="compass" class="w-20 h-20 text-orange-400"></i>
+                        <p class="text-xs text-orange-300 font-mono mt-2">Colorado River Cut</p>
+                    </div>
+                `,
+                story: `
+                    <p>We hiked down the sandy trail to Horseshoe Bend, where the emerald green Colorado River curves dramatically around towering red sandstone cliffs.</p>
+                    <p>The golden sunset lit up the canyon walls in glowing fiery hues. Looking over the steep drop with you beside me, wind in our hair, felt like a peak romantic moment we'll cherish forever.</p>
+                `,
+                loveNote: "Max's Note: With every curve and turn in life, I will always choose to walk beside you."
+            },
+            {
+                title: "8. Electric Nights in Las Vegas 🎰✨",
+                location: "Las Vegas Strip, Nevada",
+                graphic: `
+                    <div class="relative animate-float text-center">
+                        <i data-lucide="sparkles" class="w-20 h-20 text-yellow-300"></i>
+                        <p class="text-xs text-yellow-200 font-mono mt-2">Viva Las Vegas!</p>
+                    </div>
+                `,
+                story: `
+                    <p>From silent nature straight into the blinding neon lights and electric energy of <strong>Las Vegas</strong>!</p>
+                    <p>We traded the quiet camper night for glittering casinos, dancing fountains at Bellagio, vibrant street performers, and delicious food. Walking the Strip late into the night, laughing and dazzled by the spectacle—Vegas was a wild, brilliant highlight of our trip!</p>
+                `,
+                loveNote: "Max's Note: Among millions of bright city lights in Vegas, you were still the brightest light in my eyes."
+            },
+            {
+                title: "9. Full Circle Back to Los Angeles 🏙️🌴",
+                location: "Los Angeles & Santa Monica",
+                graphic: `
+                    <div class="relative animate-float text-center">
+                        <i data-lucide="palmtree" class="w-20 h-20 text-emerald-300"></i>
+                        <p class="text-xs text-emerald-200 font-mono mt-2">LA Sunshine</p>
+                    </div>
+                `,
+                story: `
+                    <p>After thousands of miles through deserts, canyons, and neon cities, our trust camper brought us safely back to Los Angeles.</p>
+                    <p>We reflected on everything we'd seen: from the beaches of La Jolla to the depths of the Grand Canyon. We returned older, happier, and even more deeply in love than when we boarded that plane in Germany.</p>
+                `,
+                loveNote: "Max's Note: No matter where our travels take us next, being with you is my ultimate destination."
+            },
+            {
+                title: "10. Happy Vietnamese Women's Day, My Love 🌹❤️",
+                location: "To Ran, With All My Love",
+                graphic: `
+                    <div class="relative animate-float text-center">
+                        <div class="p-4 rounded-full bg-rose-500/30 border border-rose-400 inline-block shadow-lg shadow-rose-500/50">
+                            <i data-lucide="heart" class="w-16 h-16 text-rose-400 fill-current animate-pulse"></i>
+                        </div>
+                        <p class="text-xs text-rose-200 font-script text-lg mt-3">Chúc Mừng Ngày Phụ Nữ Việt Nam!</p>
+                    </div>
+                `,
+                story: `
+                    <p class="text-base md:text-lg font-medium text-rose-200">Dearest Ran,</p>
+                    <p>Today is <strong>Vietnamese Women's Day (20/10)</strong>, a special day dedicated to celebrating remarkable, strong, beautiful women like you!</p>
+                    <p>Thank you for being my adventure partner, my best friend, my soulmate, and my favorite travel companion. From flying out of Munich to camper van living across California & Arizona, every second with you is a gift I treasure deeply.</p>
+                    <p class="font-bold text-amber-300 pt-2">Anh yêu em rất nhiều! Happy Vietnamese Women's Day! 🌹💐✨</p>
+                `,
+                loveNote: "Forever yours, Max ❤️"
+            }
+        ];
+
+        let currentChapter = 0;
+        let isAudioPlaying = false;
+
+        function updateUI() {
+            const ch = storyChapters[currentChapter];
+
+            // Updates Text
+            document.getElementById('locationTag').innerText = ch.location;
+            document.getElementById('chapterTitle').innerText = ch.title;
+            document.getElementById('chapterStory').innerHTML = ch.story;
+            document.getElementById('loveNoteText').innerText = ch.loveNote;
+            document.getElementById('chapterCount').innerText = `Chapter ${currentChapter + 1}`;
+
+            // Updates Graphic
+            document.getElementById('sceneGraphic').innerHTML = ch.graphic;
+
+            // Updates Progress Bar Width
+            const progress = ((currentChapter + 1) / storyChapters.length) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+
+            // Buttons state
+            document.getElementById('prevBtn').disabled = currentChapter === 0;
+
+            const nextBtnText = document.getElementById('nextBtnText');
+            if (currentChapter === storyChapters.length - 1) {
+                nextBtnText.innerText = "Celebrate! 🎉";
+                document.getElementById('nextBtn').onclick = triggerCelebration;
+            } else {
+                nextBtnText.innerText = "Next Memory";
+                document.getElementById('nextBtn').onclick = nextChapter;
+            }
+
+            // Render navigation dots
+            renderDots();
+
+            // Refresh icons dynamically
+            lucide.createIcons();
+        }
+
+        function renderDots() {
+            const container = document.getElementById('dotsContainer');
+            container.innerHTML = '';
+            storyChapters.forEach((_, idx) => {
+                const dot = document.createElement('button');
+                dot.className = `w-2.5 h-2.5 rounded-full transition-all ${idx === currentChapter ? 'bg-rose-400 w-6' : 'bg-slate-700 hover:bg-slate-500'}`;
+                dot.onclick = () => {
+                    currentChapter = idx;
+                    updateUI();
+                };
+                container.appendChild(dot);
+            });
+        }
+
+        function nextChapter() {
+            if (currentChapter < storyChapters.length - 1) {
+                currentChapter++;
+                updateUI();
+            }
+        }
+
+        function prevChapter() {
+            if (currentChapter > 0) {
+                currentChapter--;
+                updateUI();
+            }
+        }
+
+        function triggerCelebration() {
+            confetti({
+                particleCount: 120,
+                spread: 80,
+                origin: { y: 0.6 }
+            });
+
+            setTimeout(() => {
+                confetti({
+                    particleCount: 80,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 }
+                });
+                confetti({
+                    particleCount: 80,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 }
+                });
+            }, 300);
+        }
+
+        function toggleMusic() {
+            const audio = document.getElementById('bgAudio');
+            const musicText = document.getElementById('musicText');
+            if (isAudioPlaying) {
+                audio.pause();
+                musicText.innerText = "Play Music 🎵";
+            } else {
+                audio.play().then(() => {
+                    musicText.innerText = "Pause Music ⏸️";
+                }).catch(() => {
+                    musicText.innerText = "Play Music 🎵";
+                });
+            }
+            isAudioPlaying = !isAudioPlaying;
+        }
+
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class HeartParticle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + 20;
+                this.size = Math.random() * 12 + 6;
+                this.speedY = Math.random() * 1.2 + 0.4;
+                this.speedX = Math.sin(Math.random() * Math.PI) * 0.5;
+                this.opacity = Math.random() * 0.5 + 0.2;
+                this.color = ['#f43f5e', '#fb7185', '#fcd34d', '#38bdf8'][Math.floor(Math.random() * 4)];
+            }
+            update() {
+                this.y -= this.speedY;
+                this.x += this.speedX;
+                if (this.y < -20) this.reset();
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = this.color;
+                ctx.font = `${this.size}px sans-serif`;
+                ctx.fillText('✨', this.x, this.y);
+                ctx.restore();
+            }
+        }
+
+        for (let i = 0; i < 35; i++) {
+            particles.push(new HeartParticle());
+        }
+
+        function animateBg() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateBg);
+        }
+
+        window.onload = () => {
+            updateUI();
+            animateBg();
+        };
+    </script>
+</body>
+</html>
