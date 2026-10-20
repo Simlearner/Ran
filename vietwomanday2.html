@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Vietnamese Women's Day, My Love | Max & Ran's Adventure</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        desert: {
+                            50: '#fffaf5',
+                            100: '#feebd9',
+                            300: '#f9b982',
+                            500: '#e07a5f',
+                            700: '#9b3d27',
+                        },
+                        sunset: {
+                            purple: '#3d405b',
+                            rose: '#f2cc8f',
+                            coral: '#e07a5f',
+                            teal: '#81b29a'
+                        }
+                    },
+                    fontFamily: {
+                        script: ['"Dancing Script"', 'cursive'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(224, 122, 95, 0.5);
+            border-radius: 3px;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(1deg); }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .dark-glass {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen overflow-x-hidden selection:bg-rose-500 selection:text-white">
+
+    <!-- Background Animated Canvas -->
+    <canvas id="bgCanvas" class="fixed inset-0 pointer-events-none z-0 opacity-40"></canvas>
+
+    <!-- Top Music & Progress Navigation -->
+    <header class="fixed top-0 left-0 right-0 z-50 px-4 py-3 bg-slate-950/80 backdrop-blur-md border-b border-white/10 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <span class="p-2 bg-gradient-to-tr from-rose-500 to-amber-400 rounded-full text-white shadow-lg shadow-rose-500/30">
+                <i data-lucide="heart" class="w-5 h-5 fill-current"></i>
+            </span>
+            <div>
+                <h1 class="text-xs text-rose-300 font-medium tracking-widest uppercase">Max & Ran</h1>
+                <p class="text-sm font-semibold text-white">Vietnamese Women's Day 🌹</p>
+            </div>
+        </div>
+
+        <!-- Progress Tracker Indicator -->
+        <div class="hidden md:flex items-center space-x-2 text-xs text-slate-300">
+            <span id="chapterCount" class="font-semibold text-amber-400">Chapter 1</span>
+            <span>/ 10</span>
+        </div>
+
+        <button id="bgMusicBtn" onclick="toggleMusic()" class="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-slate-800/80 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700 transition">
+            <i id="musicIcon" data-lucide="music" class="w-4 h-4 text-rose-400"></i>
+            <span id="musicText">Play Music 🎵</span>
+        </button>
+    </header>
+
+    <!-- Audio Element (Ambient Relaxing Instrumental) -->
+    <audio id="bgAudio" loop preload="auto">
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3" type="audio/mpeg">
+    </audio>
+
+    <main class="relative z-10 max-w-5xl mx-auto px-4 pt-24 pb-16 min-h-screen flex flex-col justify-between">
+
+        <!-- Chapter Progress Bar -->
+        <div class="w-full bg-slate-800/60 rounded-full h-1.5 mb-8 overflow-hidden border border-slate-700/50">
+            <div id="progressBar" class="bg-gradient-to-r from-rose-500 via-amber-400 to-emerald-400 h-full w-[10%] transition-all duration-700 ease-out"></div>
+        </div>
+
+        <!-- Main Content Card Box -->
+        <div id="storyCard" class="relative rounded-3xl dark-glass p-6 md:p-10 shadow-2xl transition-all duration-500 my-auto border border-white/10 min-h-[480px] flex flex-col justify-between overflow-hidden">
+            
+            <!-- Chapter Tag & Location Pill -->
+            <div id="cardHeader" class="flex flex-wrap items-center justify-between gap-3 mb-6">
+                <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 text-xs font-medium">
+                    <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+                    <span id="locationTag">Munich Airport (MUC) to LAX</span>
+                </div>
+                <div id="dateTag" class="text-xs text-slate-400 font-mono flex items-center gap-1">
+                    <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                    <span>The Great Southwest Expedition</span>
+                </div>
+            </div>
+
+            <!-- Main Story Visual & Content Section -->
+            <div class="grid md:grid-cols-12 gap-8 items-center my-2">
+                <!-- Visual Icon / Scene Illustration Area -->
+                <div class="md:col-span-5 flex flex-col items-center justify-center">
+                    <div id="sceneContainer" class="relative w-48 h-48 md:w-64 md:h-64 rounded-2xl bg-gradient-to-b from-slate-800/80 to-slate-900/90 border border-slate-700 flex items-center justify-center p-6 shadow-inner group">
+                        <div id="sceneGlow" class="absolute inset-0 rounded-2xl bg-rose-500/10 blur-xl group-hover:bg-rose-500/20 transition"></div>
+                        <div id="sceneGraphic" class="relative z-10 text-center flex flex-col items-center">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Text Story Content -->
+                <div class="md:col-span-7 space-y-4">
+                    <h2 id="chapterTitle" class="text-2xl md:text-3xl font-bold text-white font-script md:font-sans tracking-wide leading-tight bg-gradient-to-r from-white via-rose-100 to-amber-200 bg-clip-text text-transparent">
+                        Leaving Germany Behind
+                    </h2>
+                    
+                    <div id="chapterStory" class="text-slate-300 text-sm md:text-base leading-relaxed space-y-3 font-light custom-scrollbar max-h-60 overflow-y-auto pr-2">
+                        <!-- Dynamic Text -->
+                    </div>
+
+                    <!-- Interactive Memory Quote / Max's Love Note -->
+                    <div id="loveNoteBox" class="mt-4 p-3.5 rounded-xl bg-rose-950/40 border border-rose-500/30 text-rose-200 text-xs md:text-sm italic flex items-start space-x-3">
+                        <i data-lucide="quote" class="w-5 h-5 text-rose-400 shrink-0 mt-0.5"></i>
+                        <span id="loveNoteText">"Every step across the ocean with you feels like the start of our favorite movie."</span>
+                    </div>
+
+                    <!-- Minigame Trigger Section -->
+                    <div id="minigameContainer" class="mt-4 p-4 rounded-xl bg-slate-900/90 border border-amber-500/40 shadow-lg">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                                <i data-lucide="gamepad-2" class="w-4 h-4"></i> Chapter Mini-Game
+                            </span>
+                            <span id="gameScoreTag" class="text-xs font-mono text-slate-300">Score: 0</span>
+                        </div>
+                        <p id="gameInstructions" class="text-xs text-slate-300 mb-3">Play Max & Ran's Road Trip Challenge to unlock special bonus memories!</p>
+                        
+                        <!-- Mini Game Canvas / Interactive Container -->
+                        <div class="relative w-full h-44 bg-slate-950 rounded-lg border border-slate-800 overflow-hidden flex flex-col items-center justify-center" id="gameViewport">
+                            <canvas id="miniGameCanvas" class="w-full h-full block hidden"></canvas>
+                            <div id="gameStartOverlay" class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center p-4 text-center z-10">
+                                <p id="gameTitle" class="text-sm font-bold text-amber-300 mb-1">Packing Challenge!</p>
+                                <p id="gameDesc" class="text-xs text-slate-400 mb-3">Catch the falling passports and luggage for Max & Ran's trip!</p>
+                                <button onclick="startMiniGame()" class="px-4 py-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-rose-500 text-slate-950 font-bold text-xs hover:scale-105 transition shadow-md">
+                                    Play Mini-Game 🎮
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chapter Navigation Footer Controls -->
+            <div class="mt-8 pt-6 border-t border-slate-800 flex items-center justify-between">
+                <button id="prevBtn" onclick="prevChapter()" class="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 font-medium text-sm transition disabled:opacity-30 disabled:cursor-not-allowed">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    <span>Previous</span>
+                </button>
+
+                <div id="dotsContainer" class="flex items-center space-x-1.5">
+                    <!-- Dots generated in JS -->
+                </div>
+
+                <button id="nextBtn" onclick="nextChapter()" class="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-600 hover:to-amber-600 text-white font-semibold text-sm shadow-lg shadow-rose-500/25 transition transform active:scale-95">
+                    <span id="nextBtnText">Next Memory</span>
+                    <i id="nextBtnIcon" data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Interactive Map Route Preview Footer -->
+        <div class="mt-6 dark-glass rounded-2xl p-4 border border-white/5 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+            <div class="flex items-center space-x-2">
+                <i data-lucide="compass" class="w-4 h-4 text-amber-400"></i>
+                <span class="font-medium text-slate-300">Route Progress:</span>
+                <span id="routeSummary">MUC ✈️ LAX 🚐 La Jolla 🌵 Joshua Tree ⛽ Route 66 🏞️ Grand Canyon 🐎 Horseshoe Bend 🎰 Las Vegas 🏙️ LA</span>
+            </div>
+            <div class="flex items-center space-x-2 text-rose-300 font-medium">
+                <span>Happy Ngày Phụ Nữ Việt Nam 20/10</span>
+                <i data-lucide="heart" class="w-3.5 h-3.5 text-rose-400 fill-current"></i>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const storyChapters = [
+            {
+                title: "1. The Flight from Munich to LA ✈️",
+                location: "Munich (MUC) ➔ Los Angeles (LAX)",
+                graphic: `
+                    <div class="relative animate-float">
+                        <i data-lucide="plane" class="w-20 h-20 text-sky-400"></i>
+                        <span class="absolute -top-1 -right-1 flex h-3 w-3">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-3 w-3 bg-sky-500"></span>
+                        </span>
+                    </div>
+                    <p class="text-xs text-sky-300 font-mono mt-3">Flight 11+ Hours</p>
+                `,
+                story: `
+                    <p>It all began back home in Germany. We packed our bags, checked our passports, and boarded our long flight out of Munich, bound for sunny California!</p>
+                    <p>High above the Atlantic, sitting side-by-side in those airplane seats, I looked at you and knew this road trip was going to be an unforgettable chapter in our lives.</p>
+                `,
+                loveNote: "Max's Note: Flying halfway across the globe is easy when I'm sitting next to my favorite person in the world.",
+                gameType: "catch",
+                gameTitle: "Munich Packing Sprint! 🧳",
+                gameDesc: "Move your basket with arrow keys or swipe to catch passports and suitcases before boarding!"
+            },
+            {
+                title: "2. Cruising LA in Our Camper 🚐",
+                location: "Los Angeles & Coast Hwy",
+                graphic: `
+                    <div class="relative animate-float">
+                        <i data-lucide="truck" class="w-20 h-20 text-amber-400"></i>
+                        <i data-lucide="sun" class="w-8 h-8 text-amber-300 absolute -top-4 -right-2 animate-spin" style="animation-duration: 12s;"></i>
+                    </div>
+                    <p class="text-xs text-amber-300 font-mono mt-3">California Dreamin'</p>
+                `,
+                story: `
+                    <p>We touched down in Los Angeles and picked up our camper van—our cozy home on wheels!</p>
+                    <p>Steering down LA boulevards with ocean breezes felt surreal. You sitting in the passenger seat, playing our favorite songs, as our epic adventure officially kicked off.</p>
+                `,
+                loveNote: "Max's Note: Home isn't a fixed address anymore—it's anywhere we park our camper together.",
+                gameType: "dodge",
+                gameTitle: "LA Camper Highway Cruiser 🚐",
+                gameDesc: "Dodge oncoming cars and collect heart power-ups on the highway!"
+            },
+            {
+                title: "3. Ocean Magic at The Marine Room in La Jolla 🌊🍷",
+                location: "The Marine Room, La Jolla",
+                graphic: `
+                    <div class="relative animate-float text-center">
+                        <div class="flex items-center justify-center space-x-2">
+                            <i data-lucide="utensils" class="w-12 h-12 text-rose-400"></i>
+                            <i data-lucide="waves" class="w-12 h-12 text-teal-400"></i>
+                        </div>
+                        <p class="text-xs text-rose-300 font-mono mt-3">High Tide Dining</p>
+                    </div>
+                `,
+                story: `
+                    <p>We drove south to La Jolla for our date at <strong>The Marine Room</strong>.</p>
+                    <p>Waves crashing right against the glass windows, glowing candlelight, and your radiant laugh reflecting against the night ocean made this meal absolute perfection.</p>
+                `,
+                loveNote: "Max's Note: You outshined the ocean views that night, Ran. Truly breathtaking.",
+                gameType: "wave",
+                gameTitle: "High-Tide Wave Timing 🌊",
+                gameDesc: "Click or tap when the crashing wave hits the green target zone for maximum romance points!"
+            },
+            {
+                title: "4. Desert Wonders in Joshua Tree & Skull Rock 🌵💀",
+                location: "Joshua Tree National Park",
+                graphic: `
+                    <div class="relative animate-float text-center">
+                        <i data-lucide="trees" class="w-20 h-20 text-emerald-400"></i>
+                        <div class="mt-1 text-amber-200 text-xs font-mono">Skull Rock 🪨</div>
+                    </div>
+                `,
+                story: `
+                    <p>Leaving the coast, we parked in mystical Joshua Tree National Park!</p>
+                    <p>We climbed through bizarre rock formations at <strong>Skull Rock</strong>, admired twisted Joshua Trees, and stargazed under the endless dark sky.</p>
+                `,
+                loveNote: "Max's Note: In the quiet vastness of the desert, loving you feels simpler and deeper than ever.",
+                gameType: "stars",
+                gameTitle: "Joshua Tree Stargazer ✨",
+                gameDesc: "Connect floating stars to build constellations in the desert sky!"
+            },
+            {
+                title: "5. Radiator Springs Vibes on Route 66 ⚡🚗",
+                location: "Route 66 - Seligman & Kingman",
+                graphic: `
+                    <div class="relative animate-float text-center">
+                        <i data-lucide="milestone" class="w-20 h-20 text-rose-400"></i>
+                        <p class="text-xs text-rose-300 font-mono mt-2">Historic Route 66</p>
+                    </div>
+                `,
+                story: `
+                    <p>We cruised down Historic Route 66—the real Radiator Springs from Disney Pixar <em>Cars</em>!</p>
+                    <p>Vintage neon signs, old classic cars, and nostalgic diners... life felt like an old-school movie adventure.</p>
+                `,
+                loveNote: "Max's Note: Life with you is the ultimate joyride—no shortcuts needed.",
+                gameType: "dodge",
+                gameTitle: "Radiator Springs Retro Rally 🚘",
+                gameDesc: "Guide Lightning Max and Ran past vintage road cones and grab neon stars!"
+            },
+            {
+                title: "6. Standing in Awe at the Grand Canyon 🏞️",
+                location: "Grand Canyon National Park",
+                graphic: `
+                    <div class="relative animate-float text-center">
+                        <i data-lucide="mountain" class="w-20 h-20 text-amber-500"></i>
+                        <p class="text-xs text-amber-300 font-mono mt-2">South Rim Vista</p>
+                    </div>
+                `,
+                story: `
+                    <p>Standing on the edge of the <strong>Grand Canyon</strong> left us completely speechless.</p>
+                    <p>Layer upon layer of majestic red rock carved over millions of years. Holding your hand there was pure magic.</p>
+                `,
+                loveNote: "Max's Note: As vast as the Grand Canyon is, my love for you stretches even further.",
+                gameType: "eagle",
+                gameTitle: "Canyon Eagle Flight 🦅",
+                gameDesc: "Tap/Click to soar over the red canyon cliffs and avoid rock outcrops!"
+            },
+            {
+                title: "7. Golden Hour at Horseshoe Bend 🐎🌅",
+                location: "Horseshoe Bend, Page AZ",
+                graphic: `
+                    <div class="relative animate-float text-center">
+                        <i data-lucide="compass" class="w-20 h-20 text-orange-400"></i>
+                        <p class="text-xs text-orange-300 font-mono mt-2">Colorado River Cut</p>
+                    </div>
+                `,
+                story: `
+                    <p>We hiked down to Horseshoe Bend as golden hour painted the Colorado River cut in fiery crimson hues.</p>
+                    <p>Wind in our hair, standing together high above the cliff edge, watching sunset glow.</p>
+                `,
+                loveNote: "Max's Note: With every curve and turn in life, I will always choose to walk beside you.",
+                gameType: "photo",
+                gameTitle: "Golden Hour Sunset Snap 📸",
+                gameDesc: "Stop the moving camera lens frame right in the sunset sweet spot!"
+            },
+            {
+                title: "8. Electric Nights in Las Vegas 🎰✨",
+                location: "Las Vegas Strip, Nevada",
+                graphic: `
+                    <div class="relative animate-float text-center">
+                        <i data-lucide="sparkles" class="w-20 h-20 text-yellow-300"></i>
+                        <p class="text-xs text-yellow-200 font-mono mt-2">Viva Las Vegas!</p>
+                    </div>
+                `,
+                story: `
+                    <p>We pulled up into the glittering neon lights and energetic pulse of <strong>Las Vegas</strong>!</p>
+                    <p>Fountains dancing at Bellagio, casino lights, street music, and endless smiles under night skies.</p>
+                `,
+                loveNote: "Max's Note: Among millions of bright city lights in Vegas, you were still the brightest light in my eyes.",
+                gameType: "slots",
+                gameTitle: "Max & Ran's Jackpot Matcher 🎰",
+                gameDesc: "Spin the Vegas reels to land 3 matching love symbols!"
+            },
+            {
+                title: "9. Full Circle Back to Los Angeles 🏙️🌴",
+                location: "Los Angeles & Santa Monica",
+                graphic: `
+                    <div class="relative animate-float text-center">
+                        <i data-lucide="palmtree" class="w-20 h-20 text-emerald-300"></i>
+                        <p class="text-xs text-emerald-200 font-mono mt-2">LA Sunshine</p>
+                    </div>
+                `,
+                story: `
+                    <p>Thousands of miles later, our trusty camper delivered us back to LA.</p>
+                    <p>We returned older, happier, and even more deeply in love than when we left Munich.</p>
+                `,
+                loveNote: "Max's Note: No matter where our travels take us next, being with you is my ultimate destination.",
+                gameType: "catch",
+                gameTitle: "Memory Collector 📸",
+                gameDesc: "Catch all the souvenir polaroids from our epic road trip!"
+            },
+            {
+                title: "10. Happy Vietnamese Women's Day, My Love 🌹❤️",
+                location: "To Ran, With All My Love",
+                graphic: `
+                    <div class="relative animate-float text-center">
+                        <div class="p-4 rounded-full bg-rose-500/30 border border-rose-400 inline-block shadow-lg shadow-rose-500/50">
+                            <i data-lucide="heart" class="w-16 h-16 text-rose-400 fill-current animate-pulse"></i>
+                        </div>
+                        <p class="text-xs text-rose-200 font-script text-lg mt-3">Chúc Mừng Ngày Phụ Nữ Việt Nam!</p>
+                    </div>
+                `,
+                story: `
+                    <p class="text-base md:text-lg font-medium text-rose-200">Dearest Ran,</p>
+                    <p>Today is <strong>Vietnamese Women's Day (20/10)</strong>!</p>
+                    <p>Thank you for being my adventure partner, my soulmate, and my best friend. Anh yêu em rất nhiều! 🌹💐✨</p>
+                `,
+                loveNote: "Forever yours, Max ❤️",
+                gameType: "celebrate",
+                gameTitle: "Grand Fireworks Finale 🎆",
+                gameDesc: "Click anywhere on the screen to launch personalized love fireworks!"
+            }
+        ];
+
+        let gameActive = false;
+        let miniGameAnimId = null;
+        let gameScore = 0;
+        let gCanvas = document.getElementById('miniGameCanvas');
+        let gCtx = gCanvas.getContext('2d');
+
+        function setupGameOverlay() {
+            const ch = storyChapters[currentChapter];
+            document.getElementById('gameTitle').innerText = ch.gameTitle;
+            document.getElementById('gameDesc').innerText = ch.gameDesc;
+            document.getElementById('gameStartOverlay').classList.remove('hidden');
+            gCanvas.classList.add('hidden');
+            if (miniGameAnimId) cancelAnimationFrame(miniGameAnimId);
+            gameActive = false;
+        }
+
+        function startMiniGame() {
+            document.getElementById('gameStartOverlay').classList.add('hidden');
+            gCanvas.classList.remove('hidden');
+            
+            // Set canvas resolution
+            gCanvas.width = gCanvas.clientWidth;
+            gCanvas.height = gCanvas.clientHeight;
+
+            gameActive = true;
+            gameScore = 0;
+            document.getElementById('gameScoreTag').innerText = `Score: 0`;
+
+            const type = storyChapters[currentChapter].gameType;
+            if (type === 'catch') runCatchGame();
+            else if (type === 'dodge') runDodgeGame();
+            else if (type === 'wave') runWaveGame();
+            else if (type === 'stars') runStarsGame();
+            else if (type === 'eagle') runEagleGame();
+            else if (type === 'photo') runPhotoGame();
+            else if (type === 'slots') runSlotsGame();
+            else runCelebrateGame();
+        }
+
+        /* Catch Game Logic */
+        function runCatchGame() {
+            let basketX = gCanvas.width / 2 - 20;
+            let items = [];
+            
+            function onMove(e) {
+                const rect = gCanvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                basketX = clientX - rect.left - 20;
+            }
+            gCanvas.onmousemove = onMove;
+            gCanvas.ontouchmove = onMove;
+
+            function loop() {
+                if (!gameActive) return;
+                gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
+
+                if (Math.random() < 0.05) {
+                    items.push({ x: Math.random() * (gCanvas.width - 20), y: 0, speed: 2 + Math.random() * 2, icon: Math.random() > 0.5 ? '🛂' : '🧳' });
+                }
+
+                // Draw basket
+                gCtx.fillStyle = '#e07a5f';
+                gCtx.fillRect(basketX, gCanvas.height - 15, 40, 10);
+
+                items.forEach((item, idx) => {
+                    item.y += item.speed;
+                    gCtx.font = '16px sans-serif';
+                    gCtx.fillText(item.icon, item.x, item.y);
+
+                    if (item.y >= gCanvas.height - 20 && item.x >= basketX - 10 && item.x <= basketX + 40) {
+                        gameScore += 10;
+                        document.getElementById('gameScoreTag').innerText = `Score: ${gameScore}`;
+                        items.splice(idx, 1);
+                    } else if (item.y > gCanvas.height) {
+                        items.splice(idx, 1);
+                    }
+                });
+
+                miniGameAnimId = requestAnimationFrame(loop);
+            }
+            loop();
+        }
+
+        /* Dodge Game Logic */
+        function runDodgeGame() {
+            let playerX = gCanvas.width / 2 - 15;
+            let obstacles = [];
+
+            function onMove(e) {
+                const rect = gCanvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                playerX = clientX - rect.left - 15;
+            }
+            gCanvas.onmousemove = onMove;
+            gCanvas.ontouchmove = onMove;
+
+            function loop() {
+                if (!gameActive) return;
+                gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
+
+                if (Math.random() < 0.06) {
+                    obstacles.push({ x: Math.random() * (gCanvas.width - 20), y: 0, speed: 3 + Math.random() * 2, emoji: Math.random() > 0.3 ? '🚗' : '💖' });
+                }
+
+                // Player camper
+                gCtx.font = '20px sans-serif';
+                gCtx.fillText('🚐', playerX, gCanvas.height - 10);
+
+                obstacles.forEach((obs, idx) => {
+                    obs.y += obs.speed;
+                    gCtx.fillText(obs.emoji, obs.x, obs.y);
+
+                    if (obs.y >= gCanvas.height - 25 && Math.abs(obs.x - playerX) < 20) {
+                        if (obs.emoji === '💖') {
+                            gameScore += 20;
+                        } else {
+                            gameScore = Math.max(0, gameScore - 5);
+                        }
+                        document.getElementById('gameScoreTag').innerText = `Score: ${gameScore}`;
+                        obstacles.splice(idx, 1);
+                    } else if (obs.y > gCanvas.height) {
+                        obstacles.splice(idx, 1);
+                    }
+                });
+
+                miniGameAnimId = requestAnimationFrame(loop);
+            }
+            loop();
+        }
+
+        /* Wave Game */
+        function runWaveGame() {
+            let wavePos = 0;
+            let direction = 2;
+            let targetStart = gCanvas.width * 0.6;
+            let targetWidth = 40;
+
+            gCanvas.onclick = () => {
+                if (wavePos >= targetStart && wavePos <= targetStart + targetWidth) {
+                    gameScore += 50;
+                    document.getElementById('gameScoreTag').innerText = `Score: ${gameScore} Perfect! 🌊`;
+                } else {
+                    document.getElementById('gameScoreTag').innerText = `Score: ${gameScore} Missed!`;
+                }
+            };
+
+            function loop() {
+                if (!gameActive) return;
+                gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
+
+                // Target Zone
+                gCtx.fillStyle = 'rgba(16, 185, 129, 0.4)';
+                gCtx.fillRect(targetStart, 0, targetWidth, gCanvas.height);
+
+                // Wave tracker
+                wavePos += direction;
+                if (wavePos > gCanvas.width || wavePos < 0) direction *= -1;
+
+                gCtx.fillStyle = '#38bdf8';
+                gCtx.fillRect(wavePos, 0, 8, gCanvas.height);
+
+                miniGameAnimId = requestAnimationFrame(loop);
+            }
+            loop();
+        }
+
+        /* Stars Game */
+        function runStarsGame() {
+            let stars = Array.from({length: 8}, () => ({
+                x: Math.random() * (gCanvas.width - 20) + 10,
+                y: Math.random() * (gCanvas.height - 20) + 10,
+                clicked: false
+            }));
+
+            gCanvas.onclick = (e) => {
+                const rect = gCanvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                stars.forEach(s => {
+                    if (!s.clicked && Math.hypot(s.x - x, s.y - y) < 20) {
+                        s.clicked = true;
+                        gameScore += 25;
+                        document.getElementById('gameScoreTag').innerText = `Score: ${gameScore}`;
+                    }
+                });
+            };
+
+            function loop() {
+                if (!gameActive) return;
+                gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
+
+                stars.forEach((s, idx) => {
+                    gCtx.fillStyle = s.clicked ? '#fb7185' : '#fcd34d';
+                    gCtx.beginPath();
+                    gCtx.arc(s.x, s.y, 6, 0, Math.PI * 2);
+                    gCtx.fill();
+
+                    if (idx > 0 && stars[idx-1].clicked && s.clicked) {
+                        gCtx.strokeStyle = 'rgba(251, 113, 133, 0.6)';
+                        gCtx.beginPath();
+                        gCtx.moveTo(stars[idx-1].x, stars[idx-1].y);
+                        gCtx.lineTo(s.x, s.y);
+                        gCtx.stroke();
+                    }
+                });
+
+                miniGameAnimId = requestAnimationFrame(loop);
+            }
+            loop();
+        }
+
+        /* Eagle Game */
+        function runEagleGame() {
+            let birdY = gCanvas.height / 2;
+            let velocity = 0;
+            
+            gCanvas.onclick = () => { velocity = -4; };
+
+            function loop() {
+                if (!gameActive) return;
+                gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
+
+                velocity += 0.2;
+                birdY += velocity;
+                if (birdY > gCanvas.height) birdY = gCanvas.height - 10;
+                if (birdY < 0) birdY = 10;
+
+                gCtx.font = '20px sans-serif';
+                gCtx.fillText('🦅', gCanvas.width / 3, birdY);
+
+                gameScore++;
+                document.getElementById('gameScoreTag').innerText = `Score: ${gameScore}`;
+
+                miniGameAnimId = requestAnimationFrame(loop);
+            }
+            loop();
+        }
+
+        /* Photo Game */
+        function runPhotoGame() {
+            let photoX = 0;
+            let speed = 3;
+
+            gCanvas.onclick = () => {
+                if (Math.abs(photoX - gCanvas.width / 2) < 25) {
+                    gameScore += 100;
+                    document.getElementById('gameScoreTag').innerText = `Score: ${gameScore} Perfect Snap! 📸`;
+                }
+            };
+
+            function loop() {
+                if (!gameActive) return;
+                gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
+
+                photoX += speed;
+                if (photoX > gCanvas.width || photoX < 0) speed *= -1;
+
+                // Center camera target
+                gCtx.strokeStyle = '#f43f5e';
+                gCtx.strokeRect(gCanvas.width / 2 - 20, 10, 40, gCanvas.height - 20);
+
+                // Moving Lens
+                gCtx.font = '24px sans-serif';
+                gCtx.fillText('🌅', photoX, gCanvas.height / 2 + 8);
+
+                miniGameAnimId = requestAnimationFrame(loop);
+            }
+            loop();
+        }
+
+        /* Slots Game */
+        function runSlotsGame() {
+            let symbols = ['💖', '🎰', '🌹', '💎'];
+            let current = ['💖', '🎰', '🌹'];
+
+            gCanvas.onclick = () => {
+                current = [
+                    symbols[Math.floor(Math.random() * symbols.length)],
+                    symbols[Math.floor(Math.random() * symbols.length)],
+                    symbols[Math.floor(Math.random() * symbols.length)]
+                ];
+                if (current[0] === current[1] && current[1] === current[2]) {
+                    gameScore += 500;
+                    document.getElementById('gameScoreTag').innerText = `JACKPOT!! Score: ${gameScore}`;
+                } else {
+                    gameScore += 10;
+                    document.getElementById('gameScoreTag').innerText = `Score: ${gameScore}`;
+                }
+            };
+
+            function loop() {
+                if (!gameActive) return;
+                gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
+
+                gCtx.font = '32px sans-serif';
+                gCtx.fillText(current.join('  '), gCanvas.width / 4, gCanvas.height / 2 + 10);
+
+                miniGameAnimId = requestAnimationFrame(loop);
+            }
+            loop();
+        }
+
+        /* Celebrate Fireworks Game */
+        function runCelebrateGame() {
+            let fw = [];
+            gCanvas.onclick = (e) => {
+                const rect = gCanvas.getBoundingClientRect();
+                fw.push({ x: e.clientX - rect.left, y: e.clientY - rect.top, radius: 1 });
+            };
+
+            function loop() {
+                if (!gameActive) return;
+                gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
+
+                fw.forEach((f, idx) => {
+                    f.radius += 2;
+                    gCtx.strokeStyle = '#fb7185';
+                    gCtx.beginPath();
+                    gCtx.arc(f.x, f.y, f.radius, 0, Math.PI * 2);
+                    gCtx.stroke();
+                    if (f.radius > 40) fw.splice(idx, 1);
+                });
+
+                miniGameAnimId = requestAnimationFrame(loop);
+            }
+            loop();
+        }
+
+        function updateUI() {
+            const ch = storyChapters[currentChapter];
+
+            // Updates Text
+            document.getElementById('locationTag').innerText = ch.location;
+            document.getElementById('chapterTitle').innerText = ch.title;
+            document.getElementById('chapterStory').innerHTML = ch.story;
+            document.getElementById('loveNoteText').innerText = ch.loveNote;
+            document.getElementById('chapterCount').innerText = `Chapter ${currentChapter + 1}`;
+
+            // Updates Graphic
+            document.getElementById('sceneGraphic').innerHTML = ch.graphic;
+
+            // Updates Progress Bar Width
+            const progress = ((currentChapter + 1) / storyChapters.length) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+
+            // Reset Game Overlay
+            setupGameOverlay();
+
+            // Buttons state
+            document.getElementById('prevBtn').disabled = currentChapter === 0;
+
+            const nextBtnText = document.getElementById('nextBtnText');
+            if (currentChapter === storyChapters.length - 1) {
+                nextBtnText.innerText = "Celebrate! 🎉";
+                document.getElementById('nextBtn').onclick = triggerCelebration;
+            } else {
+                nextBtnText.innerText = "Next Memory";
+                document.getElementById('nextBtn').onclick = nextChapter;
+            }
+
+            // Render navigation dots
+            renderDots();
+
+            // Refresh icons dynamically
+            lucide.createIcons();
+        }
+
+        function renderDots() {
+            const container = document.getElementById('dotsContainer');
+            container.innerHTML = '';
+            storyChapters.forEach((_, idx) => {
+                const dot = document.createElement('button');
+                dot.className = `w-2.5 h-2.5 rounded-full transition-all ${idx === currentChapter ? 'bg-rose-400 w-6' : 'bg-slate-700 hover:bg-slate-500'}`;
+                dot.onclick = () => {
+                    currentChapter = idx;
+                    updateUI();
+                };
+                container.appendChild(dot);
+            });
+        }
+
+        function nextChapter() {
+            if (currentChapter < storyChapters.length - 1) {
+                currentChapter++;
+                updateUI();
+            }
+        }
+
+        function prevChapter() {
+            if (currentChapter > 0) {
+                currentChapter--;
+                updateUI();
+            }
+        }
+
+        function triggerCelebration() {
+            confetti({
+                particleCount: 120,
+                spread: 80,
+                origin: { y: 0.6 }
+            });
+
+            setTimeout(() => {
+                confetti({
+                    particleCount: 80,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 }
+                });
+                confetti({
+                    particleCount: 80,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 }
+                });
+            }, 300);
+        }
+
+        function toggleMusic() {
+            const audio = document.getElementById('bgAudio');
+            const musicText = document.getElementById('musicText');
+            if (isAudioPlaying) {
+                audio.pause();
+                musicText.innerText = "Play Music 🎵";
+            } else {
+                audio.play().then(() => {
+                    musicText.innerText = "Pause Music ⏸️";
+                }).catch(() => {
+                    musicText.innerText = "Play Music 🎵";
+                });
+            }
+            isAudioPlaying = !isAudioPlaying;
+        }
+
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class HeartParticle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + 20;
+                this.size = Math.random() * 12 + 6;
+                this.speedY = Math.random() * 1.2 + 0.4;
+                this.speedX = Math.sin(Math.random() * Math.PI) * 0.5;
+                this.opacity = Math.random() * 0.5 + 0.2;
+                this.color = ['#f43f5e', '#fb7185', '#fcd34d', '#38bdf8'][Math.floor(Math.random() * 4)];
+            }
+            update() {
+                this.y -= this.speedY;
+                this.x += this.speedX;
+                if (this.y < -20) this.reset();
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = this.color;
+                ctx.font = `${this.size}px sans-serif`;
+                ctx.fillText('✨', this.x, this.y);
+                ctx.restore();
+            }
+        }
+
+        for (let i = 0; i < 35; i++) {
+            particles.push(new HeartParticle());
+        }
+
+        function animateBg() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateBg);
+        }
+
+        window.onload = () => {
+            updateUI();
+            animateBg();
+        };
+    </script>
+</body>
+</html>
